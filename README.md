@@ -10,7 +10,8 @@ I borrowed heavily from several projects to get this working.
 **Goals**
 * Use sqlite as an in-memory sql database from rust/wasm.
 * No emscripten dependency.
-* No manually written javascript shims. (let wasm-bindgen, web-sys, js-sys handle those bits)
+* No manually written javascript shims. Let wasm-bindgen, web-sys, js-sys handle those bits.
+
 
 **Things I don't care about.**
 * Supporting all features of sqlite. Just the subset that makes sense in a browser based environment.
@@ -18,6 +19,14 @@ I borrowed heavily from several projects to get this working.
 * The libc implementation, I only care about the minimum needed to get this working. 
 * Continued rusqlite compatibility, a lot of features don't make sense in the browser environment, I doubt any
 of my modifications make sense to upstream.
+
+
+**Next up**
+* Get relevant tests working.
+* Figure out wasm-pack & hot reloading with the make+docker build. 
+* The current make+docker build isn't very fun for fast iteration during development and can't be built using cargo alone.
+Not sure yet what the solution is here. 
+* This POC was all work in preparation for rewriting some of sqlite to rust. This may or may not happen, but it is fun to hack on.
 
 **Build**
 
