@@ -18,7 +18,7 @@ I borrowed heavily from several projects to get this working.
 * Continued rusqlite compatibility, a lot of features don't make sense in the browser environment, I doubt any
 of my modifications make sense to upstream.
 
-**Building**
+**Build**
 
 You will need the docker image from https://github.com/nullrocket/wasm-compiler 
 
