@@ -1,8 +1,8 @@
 DIST_BROWSER := dist-browser
-OUTFILES_BROWSER := foo_bg.wasm foo.js foo.d.ts
+OUTFILES_BROWSER := wasm_sqlite_demo_bg.wasm wasm_sqlite_demo.js wasm_sqlite_demo_bg.d.ts
 OUTPATHS_BROWSER := $(foreach file,$(OUTFILES_BROWSER),$(DIST_BROWSER)/$(file))
 DIST_NODEJS := dist-nodejs
-OUTFILES_NODEJS := $(OUTFILES_BROWSER) foo_bg.js
+OUTFILES_NODEJS := $(OUTFILES_BROWSER) wasm_sqlite_demo.js
 OUTPATHS_NODEJS := $(foreach file,$(OUTFILES_NODEJS),$(DIST_NODEJS)/$(file))
 DOCKER_IMAGE_VERSION := 9.0.1
 DOCKER_IMAGE := wasm_compiler:$(DOCKER_IMAGE_VERSION)

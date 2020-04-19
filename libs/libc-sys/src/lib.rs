@@ -431,7 +431,6 @@ extern {
 
 use wasm_bindgen::prelude::*;
 use js_sys::Math::ceil;
-use std::panic;
 use std::ffi::CStr;
 use std::os::raw::{c_char, c_int};
 use wasm_bindgen::__rt::std::os::raw::c_long;
