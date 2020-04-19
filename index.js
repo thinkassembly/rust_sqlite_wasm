@@ -1,4 +1,4 @@
-const js = import("./dist-browser/wasm_sqlite_demo");
+const js = import("./dist-browser/rust_sqlite_wasm");
 
 js.then(js => {
   js.start();

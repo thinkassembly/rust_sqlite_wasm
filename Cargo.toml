@@ -1,5 +1,5 @@
 [package]
-name = "wasm_sqlite_demo"
+name = "rust_sqlite_wasm"
 version = "0.1.0"
 authors = ["Doug Hill"]
 #links = "bar"

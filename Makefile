@@ -1,8 +1,8 @@
 DIST_BROWSER := dist-browser
-OUTFILES_BROWSER := wasm_sqlite_demo_bg.wasm wasm_sqlite_demo.js wasm_sqlite_demo_bg.d.ts
+OUTFILES_BROWSER := rust_sqlite_wasm_bg.wasm rust_sqlite_wasm.js rust_sqlite_wasm_bg.d.ts
 OUTPATHS_BROWSER := $(foreach file,$(OUTFILES_BROWSER),$(DIST_BROWSER)/$(file))
 DIST_NODEJS := dist-nodejs
-OUTFILES_NODEJS := $(OUTFILES_BROWSER) wasm_sqlite_demo.js
+OUTFILES_NODEJS := $(OUTFILES_BROWSER) rust_sqlite_wasm.js
 OUTPATHS_NODEJS := $(foreach file,$(OUTFILES_NODEJS),$(DIST_NODEJS)/$(file))
 DOCKER_IMAGE_VERSION := 9.0.1
 DOCKER_IMAGE := wasm_compiler:$(DOCKER_IMAGE_VERSION)
@@ -25,15 +25,15 @@ DOCKER_RUN = sudo docker run \
 
 all: browser node
 
-browser: target/wasm32-unknown-unknown/release/wasm_sqlite_demo.wasm
+browser: target/wasm32-unknown-unknown/release/rust_sqlite_wasm.wasm
 	mkdir -p $(DIST_BROWSER)
-	wasm-bindgen target/wasm32-unknown-unknown/release/wasm_sqlite_demo.wasm --out-dir $(DIST_BROWSER) --browser
+	wasm-bindgen target/wasm32-unknown-unknown/release/rust_sqlite_wasm.wasm --out-dir $(DIST_BROWSER) --browser
 
-node: target/wasm32-unknown-unknown/release/wasm_sqlite_demo.wasm
+node: target/wasm32-unknown-unknown/release/rust_sqlite_wasm.wasm
 	mkdir -p $(DIST_NODEJS)
-	wasm-bindgen target/wasm32-unknown-unknown/release/wasm_sqlite_demo.wasm --out-dir $(DIST_NODEJS) --nodejs
+	wasm-bindgen target/wasm32-unknown-unknown/release/rust_sqlite_wasm.wasm --out-dir $(DIST_NODEJS) --nodejs
 
-target/wasm32-unknown-unknown/release/wasm_sqlite_demo.wasm: src/* libs/libc-sys
+target/wasm32-unknown-unknown/release/rust_sqlite_wasm.wasm: src/* libs/libc-sys
 	mkdir -p target
 	$(DOCKER_RUN)  /bin/bash -c "/clang/bin/llvm-ar d /musl-sysroot/lib/libc.a memcpy.o memmove.o memset.o expf.o memcmp.o   && cargo build --target=wasm32-unknown-unknown --release"
 
