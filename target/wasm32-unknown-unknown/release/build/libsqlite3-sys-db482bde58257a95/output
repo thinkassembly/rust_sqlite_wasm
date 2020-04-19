@@ -1,0 +1,26 @@
+cargo:rerun-if-env-changed=SQLITE_MAX_VARIABLE_NUMBER
+cargo:rerun-if-env-changed=SQLITE_MAX_EXPR_DEPTH
+TARGET = Some("wasm32-unknown-unknown")
+OPT_LEVEL = Some("3")
+HOST = Some("x86_64-unknown-linux-gnu")
+CC_wasm32-unknown-unknown = None
+CC_wasm32_unknown_unknown = None
+TARGET_CC = None
+CC = Some("/clang/bin/clang")
+CFLAGS_wasm32-unknown-unknown = None
+CFLAGS_wasm32_unknown_unknown = None
+TARGET_CFLAGS = None
+CFLAGS = Some("-O3 --target=wasm32-unknown-unknown-wasm -nostdlib -Wl,--no-entry --sysroot=/musl-sysroot")
+CRATE_CC_NO_DEFAULTS = None
+DEBUG = Some("false")
+running: "/clang/bin/clang" "-O3" "-ffunction-sections" "-fdata-sections" "-fPIC" "--target=wasm32-unknown-unknown" "-O3" "--target=wasm32-unknown-unknown-wasm" "-nostdlib" "-Wl,--no-entry" "--sysroot=/musl-sysroot" "-I" "/musl-sysroot/include" "--sysroot=/musl-sysroot" "-nostdinc" "--static" "--target=wasm32-unknown-unknown" "-Wno-unused-command-line-argument" "-Wno-bitwise-op-parentheses" "-Wno-shift-op-parentheses" "-emit-llvm" "-DLONGDOUBLE_TYPE=double" "-DSQLITE_OMIT_LOAD_EXTENSION" "-DSQLITE_DISABLE_LFS" "-DSQLITE_ENABLE_FTS5" "-DSQLITE_ENABLE_FTS5_PARENTHESIS" "-DSQLITE_THREADSAFE=0" "-DSQLITE_HAVE_ISNAN" "-o" "/c/target/wasm32-unknown-unknown/release/build/libsqlite3-sys-db482bde58257a95/out/sqlite3/sqlite3.o" "-c" "sqlite3/sqlite3.c"
+exit code: 0
+AR_wasm32-unknown-unknown = None
+AR_wasm32_unknown_unknown = None
+TARGET_AR = None
+AR = Some("/clang/bin/llvm-ar")
+running: "/clang/bin/llvm-ar" "crs" "/c/target/wasm32-unknown-unknown/release/build/libsqlite3-sys-db482bde58257a95/out/libsqlite3.a" "/c/target/wasm32-unknown-unknown/release/build/libsqlite3-sys-db482bde58257a95/out/sqlite3/sqlite3.o"
+exit code: 0
+cargo:rustc-link-lib=static=sqlite3
+cargo:rustc-link-search=native=/c/target/wasm32-unknown-unknown/release/build/libsqlite3-sys-db482bde58257a95/out
+cargo:rustc-link-search=native=/c/target/wasm32-unknown-unknown/release/build/libsqlite3-sys-db482bde58257a95/out

@@ -1,0 +1,6 @@
+dist-browser/
+dist-nodejs/
+/node_modules/
+/.idea/
+/dist-browser/
+/dist-nodejs/

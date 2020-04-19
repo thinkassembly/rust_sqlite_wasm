@@ -1,0 +1,25 @@
+[package]
+name = "wasm_sqlite_demo"
+version = "0.1.0"
+authors = ["Doug Hill"]
+#links = "bar"
+[profile.release]
+lto=true
+[lib]
+crate-type = ["cdylib"]
+[dependencies]
+wasm-bindgen = "0.2.59"
+libc-sys = { path = "libs/libc-sys" }
+libsqlite3-sys = {path="libs/libsqlite3-sys"}
+wee_alloc = { version = "0.4.2", optional = true }
+js-sys = "0.3.37"
+wasm_println = {path="libs/wasm_println"}
+
+[build-dependencies]
+cc= "1.0.50"
+[dependencies.rusqlite]
+path = "./libs/rusqlite"
+features=["hooks"]
+
+
+
