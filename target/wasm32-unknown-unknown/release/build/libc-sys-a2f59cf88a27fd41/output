@@ -1,3 +1,0 @@
-cargo:rerun-if-env-changed=C_LIB_DIR
-cargo:rustc-link-search=native=/musl-sysroot/lib
-cargo:rustc-link-lib=static=c

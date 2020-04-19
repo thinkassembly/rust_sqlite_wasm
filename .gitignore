@@ -4,3 +4,4 @@ dist-nodejs/
 /.idea/
 /dist-browser/
 /dist-nodejs/
+/target/

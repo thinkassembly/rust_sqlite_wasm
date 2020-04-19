@@ -1,1 +1,0 @@
-{"rustc":17109510516401277427,"features":"","target":0,"profile":0,"path":0,"deps":[[11911079951217357322,"build_script_build",false,7122399929956315342]],"local":[{"RerunIfEnvChanged":{"var":"C_LIB_DIR","val":"/musl-sysroot/lib"}}],"rustflags":[],"metadata":0}
