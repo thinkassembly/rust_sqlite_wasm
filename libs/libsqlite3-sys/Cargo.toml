@@ -10,6 +10,40 @@ build = "build.rs"
 [lib]
 
 [features]
+load_extension = []
+# hot-backup interface: 3.6.11 (2009-02-18)
+backup = []
+# sqlite3_blob_reopen: 3.7.4
+blob = []
+collation = []
+# sqlite3_create_function_v2: 3.7.3 (2010-10-08)
+functions = []
+# sqlite3_log: 3.6.23 (2010-03-09)
+trace = []
+bundled = []
+buildtime_bindgen = []
+limits = []
+hooks = []
+i128_blob = []
+sqlcipher = []
+unlock_notify = []
+# xSavepoint, xRelease and xRollbackTo: 3.7.7 (2011-06-23)
+vtab = []
+# xShadowName: 3.26.0
+vtab_v3 = []
+csvtab = []
+# pointer passing interfaces: 3.20.0
+array = []
+# session extension: 3.13.0
+session = []
+# window functions: 3.25.0
+window = []
+# 3.9.0
+series = []
+# check for invalid query.
+extra_check = []
+modern_sqlite = []
+unstable = []
 
 [dependencies]
 #libc-sys = {path="../libc-sys"}
