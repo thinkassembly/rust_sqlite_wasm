@@ -1,6 +1,6 @@
 This repo is a POC using clang to compile sqlite and statically link with rust targeting wasm32-unknown-unknown and accessing it using the rusqlite crate interface.
 
-This branch of the repo is based on an unmodified copy of sqlite3 sources and a slightly modified version of rusqlite.  
+This branch of the repo is based on an unmodified copy of sqlite3 sources and more extensive modifications of rusqlite sources to enable testing.  
 
 I borrowed heavily from several projects to get this working. 
 * https://github.com/wehlutyk/wasm-explorations
