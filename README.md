@@ -46,6 +46,11 @@ To build:
 make env
 make
 ```
+To test:
+```
+make node-test
+```
+
 To run in node:
 ```
 node run

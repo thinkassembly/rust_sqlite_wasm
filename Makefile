@@ -22,16 +22,26 @@ DOCKER_RUN = docker run \
   --tty \
   --rm \
   $(DOCKER_IMAGE)
-all: browser node
+all: browser-release node-release
 
-node: src/* libs/libc-sys
+node-debug: src/* libs/libc-sys
 	mkdir -p target
 	$(DOCKER_RUN)  /bin/bash -c "/clang/bin/llvm-ar d /musl-sysroot/lib/libc.a memcpy.o memmove.o memset.o expf.o memcmp.o fmax.o fmin.o && /.cargo/bin/wasm-pack build --target nodejs  --out-dir dist-nodejs"
 	$(DOCKER_RUN)  /bin/bash -c "wasm-opt /c/dist-nodejs/rust_sqlite_wasm_bg.wasm -o /c/dist-nodejs/rust_sqlite_wasm_bg.wasm"
 
-browser: src/* libs/libc-sys
+browser-debug: src/* libs/libc-sys
 	mkdir -p target
 	$(DOCKER_RUN)  /bin/bash -c "/clang/bin/llvm-ar d /musl-sysroot/lib/libc.a memcpy.o memmove.o memset.o expf.o memcmp.o fmax.o fmin.o && /.cargo/bin/wasm-pack build --target browser  --out-dir dist-browser"
+	$(DOCKER_RUN)  /bin/bash -c "wasm-opt /c/dist-browser/rust_sqlite_wasm_bg.wasm -o /c/dist-browser/rust_sqlite_wasm_bg.wasm"
+
+node-release: src/* libs/libc-sys
+	mkdir -p target
+	$(DOCKER_RUN)  /bin/bash -c "/clang/bin/llvm-ar d /musl-sysroot/lib/libc.a memcpy.o memmove.o memset.o expf.o memcmp.o fmax.o fmin.o && /.cargo/bin/wasm-pack build --target nodejs --release --out-dir dist-nodejs"
+	$(DOCKER_RUN)  /bin/bash -c "wasm-opt /c/dist-nodejs/rust_sqlite_wasm_bg.wasm -o /c/dist-nodejs/rust_sqlite_wasm_bg.wasm"
+
+browser-release: src/* libs/libc-sys
+	mkdir -p target
+	$(DOCKER_RUN)  /bin/bash -c "/clang/bin/llvm-ar d /musl-sysroot/lib/libc.a memcpy.o memmove.o memset.o expf.o memcmp.o fmax.o fmin.o && /.cargo/bin/wasm-pack build --target browser --release --out-dir dist-browser"
 	$(DOCKER_RUN)  /bin/bash -c "wasm-opt /c/dist-browser/rust_sqlite_wasm_bg.wasm -o /c/dist-browser/rust_sqlite_wasm_bg.wasm"
 
 

@@ -8,6 +8,8 @@ lto=true
 [lib]
 crate-type = ["cdylib","rlib"]
 [dependencies]
+time = "0.1.0"
+
 wasm-bindgen = "0.2.59"
 libc-sys = { path = "libs/libc-sys" }
 libsqlite3-sys = {path="libs/libsqlite3-sys"}
