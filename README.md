@@ -1,6 +1,10 @@
 This repo is a POC using clang to compile sqlite and statically link with rust targeting wasm32-unknown-unknown and accessing it using the rusqlite crate interface.
 
-This branch of the repo is based on an unmodified copy of sqlite3 sources and more extensive modifications of rusqlite sources to enable testing.  
+This branch of the repo is based on an unmodified copy of sqlite3 sources and more extensive modifications of rusqlite sources to enable testing.
+
+Unfortunately I couldn't figure out how to get web-pack tests to correctly compile and pass through link options to tests in sub crates, so I moved tests into
+the top level crate I'm using to test drive things. It's not ideal but I wanted to move on. I'll come back to this later.
+  
 
 I borrowed heavily from several projects to get this working. 
 * https://github.com/wehlutyk/wasm-explorations
@@ -24,7 +28,7 @@ of my modifications make sense to upstream.
 
 
 **Next up**
-* Get relevant tests working.
+* Move tests back into their proper places.
 * Figure out wasm-pack & hot reloading with the make+docker build. 
 * The current make+docker build isn't very fun for fast iteration during development and can't be built using cargo alone.
 Not sure yet what the solution is here. 
@@ -35,7 +39,7 @@ Not sure yet what the solution is here.
 You will need the docker image from https://github.com/nullrocket/wasm-compiler 
 
 ```
-docker pull docker.pkg.github.com/nullrocket/wasm-compiler/wasm_compiler:9.0.1
+docker pull docker.pkg.github.com/nullrocket/wasm-compiler/wasm_compiler:9.0.2
 ```
 To build:
 ```

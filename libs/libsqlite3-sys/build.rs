@@ -32,15 +32,10 @@ fn main() {
 
     cfg.flag("-DSQLITE_HAVE_ISNAN");
 
-    if cfg!(feature = "unlock_notify") {
-        cfg.flag("-DSQLITE_ENABLE_UNLOCK_NOTIFY");
-    }
     if cfg!(feature = "preupdate_hook") {
         cfg.flag("-DSQLITE_ENABLE_PREUPDATE_HOOK");
     }
-    if cfg!(feature = "session") {
-        cfg.flag("-DSQLITE_ENABLE_SESSION");
-    }
+
 
     if let Ok(limit) = env::var("SQLITE_MAX_VARIABLE_NUMBER") {
         cfg.flag(&format!("-DSQLITE_MAX_VARIABLE_NUMBER={}", limit));

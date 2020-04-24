@@ -166,34 +166,3 @@ impl VTabCursor for ArrayTabCursor {
         Ok(self.row_id)
     }
 }
-
-#[cfg(test)]
-mod test {
-    use crate::types::Value;
-    use crate::vtab::array;
-    use crate::Connection;
-    use std::rc::Rc;
-
-    #[test]
-    fn test_array_module() {
-        let db = Connection::open_in_memory().unwrap();
-        array::load_module(&db).unwrap();
-
-        let v = vec![1i64, 2, 3, 4];
-        let values = v.into_iter().map(Value::from).collect();
-        let ptr = Rc::new(values);
-        {
-            let mut stmt = db.prepare("SELECT value from rarray(?);").unwrap();
-
-            let rows = stmt.query_map(&[&ptr], |row| row.get::<_, i64>(0)).unwrap();
-            assert_eq!(2, Rc::strong_count(&ptr));
-            let mut count = 0;
-            for (i, value) in rows.enumerate() {
-                assert_eq!(i as i64, value.unwrap() - 1);
-                count += 1;
-            }
-            assert_eq!(4, count);
-        }
-        assert_eq!(1, Rc::strong_count(&ptr));
-    }
-}

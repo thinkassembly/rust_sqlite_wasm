@@ -283,7 +283,7 @@ impl Connection {
     }
 }
 
-fn is_identifier(s: &str) -> bool {
+pub fn is_identifier(s: &str) -> bool {
     let chars = s.char_indices();
     for (i, ch) in chars {
         if i == 0 {
@@ -297,11 +297,11 @@ fn is_identifier(s: &str) -> bool {
     true
 }
 
-fn is_identifier_start(c: char) -> bool {
+pub fn is_identifier_start(c: char) -> bool {
     (c >= 'A' && c <= 'Z') || c == '_' || (c >= 'a' && c <= 'z') || c > '\x7F'
 }
 
-fn is_identifier_continue(c: char) -> bool {
+pub fn is_identifier_continue(c: char) -> bool {
     c == '$'
         || (c >= '0' && c <= '9')
         || (c >= 'A' && c <= 'Z')
@@ -310,124 +310,3 @@ fn is_identifier_continue(c: char) -> bool {
         || c > '\x7F'
 }
 
-#[cfg(test)]
-mod test {
-    use super::Sql;
-    use crate::pragma;
-    use crate::{Connection, DatabaseName};
-
-    #[test]
-    fn pragma_query_value() {
-        let db = Connection::open_in_memory().unwrap();
-        let user_version: i32 = db
-            .pragma_query_value(None, "user_version", |row| row.get(0))
-            .unwrap();
-        assert_eq!(0, user_version);
-    }
-
-    #[test]
-    #[cfg(feature = "modern_sqlite")]
-    fn pragma_func_query_value() {
-        use crate::NO_PARAMS;
-
-        let db = Connection::open_in_memory().unwrap();
-        let user_version: i32 = db
-            .query_row(
-                "SELECT user_version FROM pragma_user_version",
-                NO_PARAMS,
-                |row| row.get(0),
-            )
-            .unwrap();
-        assert_eq!(0, user_version);
-    }
-
-    #[test]
-    fn pragma_query_no_schema() {
-        let db = Connection::open_in_memory().unwrap();
-        let mut user_version = -1;
-        db.pragma_query(None, "user_version", |row| {
-            user_version = row.get(0)?;
-            Ok(())
-        })
-        .unwrap();
-        assert_eq!(0, user_version);
-    }
-
-    #[test]
-    fn pragma_query_with_schema() {
-        let db = Connection::open_in_memory().unwrap();
-        let mut user_version = -1;
-        db.pragma_query(Some(DatabaseName::Main), "user_version", |row| {
-            user_version = row.get(0)?;
-            Ok(())
-        })
-        .unwrap();
-        assert_eq!(0, user_version);
-    }
-
-    #[test]
-    fn pragma() {
-        let db = Connection::open_in_memory().unwrap();
-        let mut columns = Vec::new();
-        db.pragma(None, "table_info", &"sqlite_master", |row| {
-            let column: String = row.get(1)?;
-            columns.push(column);
-            Ok(())
-        })
-        .unwrap();
-        assert_eq!(5, columns.len());
-    }
-
-    #[test]
-    #[cfg(feature = "modern_sqlite")]
-    fn pragma_func() {
-        let db = Connection::open_in_memory().unwrap();
-        let mut table_info = db.prepare("SELECT * FROM pragma_table_info(?)").unwrap();
-        let mut columns = Vec::new();
-        let mut rows = table_info.query(&["sqlite_master"]).unwrap();
-
-        while let Some(row) = rows.next().unwrap() {
-            let row = row;
-            let column: String = row.get(1).unwrap();
-            columns.push(column);
-        }
-        assert_eq!(5, columns.len());
-    }
-
-    #[test]
-    fn pragma_update() {
-        let db = Connection::open_in_memory().unwrap();
-        db.pragma_update(None, "user_version", &1).unwrap();
-    }
-
-    #[test]
-    fn pragma_update_and_check() {
-        let db = Connection::open_in_memory().unwrap();
-        let journal_mode: String = db
-            .pragma_update_and_check(None, "journal_mode", &"OFF", |row| row.get(0))
-            .unwrap();
-        assert_eq!("off", &journal_mode);
-    }
-
-    #[test]
-    fn is_identifier() {
-        assert!(pragma::is_identifier("full"));
-        assert!(pragma::is_identifier("r2d2"));
-        assert!(!pragma::is_identifier("sp ce"));
-        assert!(!pragma::is_identifier("semi;colon"));
-    }
-
-    #[test]
-    fn double_quote() {
-        let mut sql = Sql::new();
-        sql.push_schema_name(DatabaseName::Attached(r#"schema";--"#));
-        assert_eq!(r#""schema"";--""#, sql.as_str());
-    }
-
-    #[test]
-    fn wrap_and_escape() {
-        let mut sql = Sql::new();
-        sql.push_string_literal("value'; --");
-        assert_eq!("'value''; --'", sql.as_str());
-    }
-}

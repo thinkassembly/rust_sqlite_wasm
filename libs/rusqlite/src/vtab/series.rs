@@ -260,31 +260,3 @@ impl VTabCursor for SeriesTabCursor {
         Ok(self.row_id)
     }
 }
-
-#[cfg(test)]
-mod test {
-    use crate::ffi;
-    use crate::vtab::series;
-    use crate::{Connection, NO_PARAMS};
-
-    #[test]
-    fn test_series_module() {
-        let version = unsafe { ffi::sqlite3_libversion_number() };
-        if version < 3_008_012 {
-            return;
-        }
-
-        let db = Connection::open_in_memory().unwrap();
-        series::load_module(&db).unwrap();
-
-        let mut s = db.prepare("SELECT * FROM generate_series(0,20,5)").unwrap();
-
-        let series = s.query_map(NO_PARAMS, |row| row.get::<_, i32>(0)).unwrap();
-
-        let mut expected = 0;
-        for value in series {
-            assert_eq!(expected, value.unwrap());
-            expected += 5;
-        }
-    }
-}
