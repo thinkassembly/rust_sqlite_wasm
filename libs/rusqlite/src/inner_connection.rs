@@ -5,7 +5,7 @@ use std::os::raw::{c_char, c_int};
 use std::path::Path;
 use std::ptr;
 use std::str;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool};
 use std::sync::{Arc, Mutex};
 
 use super::ffi;
@@ -15,7 +15,6 @@ use crate::error::{error_from_handle, error_from_sqlite_code, Error};
 use crate::raw_statement::RawStatement;
 use crate::statement::Statement;
 use crate::unlock_notify;
-use crate::version::version_number;
 
 pub struct InnerConnection {
     pub db: *mut ffi::sqlite3,
@@ -64,8 +63,7 @@ impl InnerConnection {
         flags: OpenFlags,
         vfs: Option<&CString>,
     ) -> Result<InnerConnection> {
-        #[cfg(not(feature = "bundled"))]
-        ensure_valid_sqlite_version();
+
         ensure_safe_sqlite_threading_mode()?;
 
         // Replicate the check for sane open flags from SQLite, because the check in
@@ -289,7 +287,6 @@ impl InnerConnection {
         unsafe { ffi::sqlite3_get_autocommit(self.db()) != 0 }
     }
 
-    #[cfg(feature = "modern_sqlite")] // 3.8.6
     pub fn is_busy(&self) -> bool {
         let db = self.db();
         unsafe {
@@ -323,54 +320,6 @@ impl Drop for InnerConnection {
     }
 }
 
-#[cfg(not(feature = "bundled"))]
-static SQLITE_VERSION_CHECK: std::sync::Once = std::sync::Once::new();
-#[cfg(not(feature = "bundled"))]
-pub static BYPASS_VERSION_CHECK: AtomicBool = AtomicBool::new(false);
-
-#[cfg(not(feature = "bundled"))]
-fn ensure_valid_sqlite_version() {
-    use crate::version::version;
-
-    SQLITE_VERSION_CHECK.call_once(|| {
-        let version_number = version_number();
-
-        // Check our hard floor.
-        if version_number < 3_006_008 {
-            panic!("rusqlite requires SQLite 3.6.8 or newer");
-        }
-
-        // Check that the major version number for runtime and buildtime match.
-        let buildtime_major = ffi::SQLITE_VERSION_NUMBER / 1_000_000;
-        let runtime_major = version_number / 1_000_000;
-        if buildtime_major != runtime_major {
-            panic!(
-                "rusqlite was built against SQLite {} but is running with SQLite {}",
-                str::from_utf8(ffi::SQLITE_VERSION).unwrap(),
-                version()
-            );
-        }
-
-        if BYPASS_VERSION_CHECK.load(Ordering::Relaxed) {
-            return;
-        }
-
-        // Check that the runtime version number is compatible with the version number
-        // we found at build-time.
-        if version_number < ffi::SQLITE_VERSION_NUMBER {
-            panic!(
-                "\
-rusqlite was built against SQLite {} but the runtime SQLite version is {}. To fix this, either:
-* Recompile rusqlite and link against the SQLite version you are using at runtime, or
-* Call rusqlite::bypass_sqlite_version_check() prior to your first connection attempt. Doing this
-  means you're sure everything will work correctly even though the runtime version is older than
-  the version we found at build time.",
-                str::from_utf8(ffi::SQLITE_VERSION).unwrap(),
-                version()
-            );
-        }
-    });
-}
 
 #[cfg(not(any(target_arch = "wasm32")))]
 static SQLITE_INIT: std::sync::Once = std::sync::Once::new();

@@ -4,38 +4,50 @@ OUTPATHS_BROWSER := $(foreach file,$(OUTFILES_BROWSER),$(DIST_BROWSER)/$(file))
 DIST_NODEJS := dist-nodejs
 OUTFILES_NODEJS := $(OUTFILES_BROWSER) rust_sqlite_wasm.js
 OUTPATHS_NODEJS := $(foreach file,$(OUTFILES_NODEJS),$(DIST_NODEJS)/$(file))
-DOCKER_IMAGE_VERSION := 9.0.1
+DOCKER_IMAGE_VERSION := 9.0.2
 DOCKER_IMAGE := wasm_compiler:$(DOCKER_IMAGE_VERSION)
 export C_LIB_DIR := /musl-sysroot/lib
-DOCKER_RUN = sudo docker run \
+
+DOCKER_RUN = docker run \
   --user $(shell id -u):$(shell id -g) \
    --volume $(CURDIR):/c:rw \
-  --volume $(CURDIR)/target:/c/target \
-  --volume $(HOME)/.cargo:/cargo \
-  --volume $(shell rustc +nightly --print sysroot):/rust:ro \
-  --env CARGO_HOME=/cargo \
-  --env PATH=/rust/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+  --volume $(CURDIR)/target:/c/target:rw \
+  --env PATH=/cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/.cargo/bin:/usr/local/nvm/versions/node/v13.13.0/bin \
   --env C_LIB_DIR=$(C_LIB_DIR) \
+  --env RUSTUP_HOME=/.rust \
+  --env CARGO_HOME=/.cargo \
   --env LLVM_CONFIG_PATH=/clang/bin/llvm-config \
   --workdir /c \
   --interactive \
   --tty \
   --rm \
   $(DOCKER_IMAGE)
+all: browser-release node-release
 
-all: browser node
-
-browser: target/wasm32-unknown-unknown/release/rust_sqlite_wasm.wasm
-	mkdir -p $(DIST_BROWSER)
-	wasm-bindgen target/wasm32-unknown-unknown/release/rust_sqlite_wasm.wasm --out-dir $(DIST_BROWSER) --browser
-
-node: target/wasm32-unknown-unknown/release/rust_sqlite_wasm.wasm
-	mkdir -p $(DIST_NODEJS)
-	wasm-bindgen target/wasm32-unknown-unknown/release/rust_sqlite_wasm.wasm --out-dir $(DIST_NODEJS) --nodejs
-
-target/wasm32-unknown-unknown/release/rust_sqlite_wasm.wasm: src/* libs/libc-sys
+node-debug: src/* libs/libc-sys
 	mkdir -p target
-	$(DOCKER_RUN)  /bin/bash -c "/clang/bin/llvm-ar d /musl-sysroot/lib/libc.a memcpy.o memmove.o memset.o expf.o memcmp.o   && cargo build --target=wasm32-unknown-unknown --release"
+	$(DOCKER_RUN)  /bin/bash -c "/clang/bin/llvm-ar d /musl-sysroot/lib/libc.a memcpy.o memmove.o memset.o expf.o memcmp.o fmax.o fmin.o && /.cargo/bin/wasm-pack build --target nodejs  --out-dir dist-nodejs"
+	$(DOCKER_RUN)  /bin/bash -c "wasm-opt /c/dist-nodejs/rust_sqlite_wasm_bg.wasm -o /c/dist-nodejs/rust_sqlite_wasm_bg.wasm"
+
+browser-debug: src/* libs/libc-sys
+	mkdir -p target
+	$(DOCKER_RUN)  /bin/bash -c "/clang/bin/llvm-ar d /musl-sysroot/lib/libc.a memcpy.o memmove.o memset.o expf.o memcmp.o fmax.o fmin.o && /.cargo/bin/wasm-pack build --target browser  --out-dir dist-browser"
+	$(DOCKER_RUN)  /bin/bash -c "wasm-opt /c/dist-browser/rust_sqlite_wasm_bg.wasm -o /c/dist-browser/rust_sqlite_wasm_bg.wasm"
+
+node-release: src/* libs/libc-sys
+	mkdir -p target
+	$(DOCKER_RUN)  /bin/bash -c "/clang/bin/llvm-ar d /musl-sysroot/lib/libc.a memcpy.o memmove.o memset.o expf.o memcmp.o fmax.o fmin.o && /.cargo/bin/wasm-pack build --target nodejs --release --out-dir dist-nodejs"
+	$(DOCKER_RUN)  /bin/bash -c "wasm-opt /c/dist-nodejs/rust_sqlite_wasm_bg.wasm -o /c/dist-nodejs/rust_sqlite_wasm_bg.wasm"
+
+browser-release: src/* libs/libc-sys
+	mkdir -p target
+	$(DOCKER_RUN)  /bin/bash -c "/clang/bin/llvm-ar d /musl-sysroot/lib/libc.a memcpy.o memmove.o memset.o expf.o memcmp.o fmax.o fmin.o && /.cargo/bin/wasm-pack build --target browser --release --out-dir dist-browser"
+	$(DOCKER_RUN)  /bin/bash -c "wasm-opt /c/dist-browser/rust_sqlite_wasm_bg.wasm -o /c/dist-browser/rust_sqlite_wasm_bg.wasm"
+
+
+node-test: src/* libs/libc-sys
+	mkdir -p target
+	$(DOCKER_RUN)  /bin/bash -c "/clang/bin/llvm-ar d /musl-sysroot/lib/libc.a memcpy.o memmove.o memset.o expf.o memcmp.o fmax.o fmin.o && /.cargo/bin/wasm-pack test  --node -- --lib "
 
 clean:
 	cargo clean

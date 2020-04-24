@@ -5,7 +5,7 @@ authors = ["John Gallagher <jgallagher@bignerdranch.com>"]
 repository = "https://github.com/jgallagher/rusqlite"
 description = "Native bindings to the libsqlite3 library"
 license = "MIT"
-#links = "c"
+links = "c"
 build = "build.rs"
 [lib]
 
@@ -34,8 +34,7 @@ vtab_v3 = []
 csvtab = []
 # pointer passing interfaces: 3.20.0
 array = []
-# session extension: 3.13.0
-session = []
+
 # window functions: 3.25.0
 window = []
 # 3.9.0

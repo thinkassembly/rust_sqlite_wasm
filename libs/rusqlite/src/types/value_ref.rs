@@ -122,7 +122,7 @@ where
     }
 }
 
-#[cfg(any(feature = "functions", feature = "session", feature = "vtab"))]
+#[cfg(any(feature = "functions",  feature = "vtab"))]
 impl<'a> ValueRef<'a> {
     pub(crate) unsafe fn from_value(value: *mut crate::ffi::sqlite3_value) -> ValueRef<'a> {
         use crate::ffi;

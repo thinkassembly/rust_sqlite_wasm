@@ -6,20 +6,38 @@ authors = ["Doug Hill"]
 [profile.release]
 lto=true
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib","rlib"]
 [dependencies]
+time = "0.1.0"
+
 wasm-bindgen = "0.2.59"
 libc-sys = { path = "libs/libc-sys" }
 libsqlite3-sys = {path="libs/libsqlite3-sys"}
 wee_alloc = { version = "0.4.2", optional = true }
 js-sys = "0.3.37"
 wasm_println = {path="libs/wasm_println"}
+wasm-bindgen-test = "0.3.10"
+byteorder = { version = "1.2", features = ["i128"], optional = true }
+lazy_static = { version = "1.0", optional = false }
+fallible-iterator = "0.2"
+fallible-streaming-iterator = "0.1"
+unicase = "2.4.0"
+chrono = { version = "0.4", optional = false }
+serde_json = { version = "1.0", optional = false }
+url = { version = "2.0", optional = false }
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3.10"
+fallible-iterator = "0.2"
+tempfile = "3.1.0"
+regex = "1.0"
 
 [build-dependencies]
 cc= "1.0.50"
 [dependencies.rusqlite]
 path = "./libs/rusqlite"
-features=["hooks"]
+features=["hooks","vtab","blob","collation","window","lazy_static","limits","trace","chrono","serde_json","url","array","csvtab","series"]
 
-
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false
 

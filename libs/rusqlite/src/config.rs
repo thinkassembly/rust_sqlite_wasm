@@ -20,19 +20,12 @@ pub enum DbConfig {
     SQLITE_DBCONFIG_TRIGGER_EQP = 1008,      // 3.22.0
     //SQLITE_DBCONFIG_RESET_DATABASE = 1009,
     SQLITE_DBCONFIG_DEFENSIVE = 1010, // 3.26.0
-    #[cfg(feature = "modern_sqlite")]
     SQLITE_DBCONFIG_WRITABLE_SCHEMA = 1011, // 3.28.0
-    #[cfg(feature = "modern_sqlite")]
     SQLITE_DBCONFIG_LEGACY_ALTER_TABLE = 1012, // 3.29
-    #[cfg(feature = "modern_sqlite")]
     SQLITE_DBCONFIG_DQS_DML = 1013, // 3.29.0
-    #[cfg(feature = "modern_sqlite")]
     SQLITE_DBCONFIG_DQS_DDL = 1014, // 3.29.0
-    #[cfg(feature = "modern_sqlite")]
     SQLITE_DBCONFIG_ENABLE_VIEW = 1015, // 3.30.0
-    #[cfg(feature = "modern_sqlite")]
     SQLITE_DBCONFIG_LEGACY_FILE_FORMAT = 1016, // 3.31.0
-    #[cfg(feature = "modern_sqlite")]
     SQLITE_DBCONFIG_TRUSTED_SCHEMA = 1017, // 3.31.0
 }
 
@@ -91,38 +84,5 @@ impl Connection {
             ));
             Ok(val != 0)
         }
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use super::DbConfig;
-    use crate::Connection;
-
-    #[test]
-    fn test_db_config() {
-        let db = Connection::open_in_memory().unwrap();
-
-        let opposite = !db.db_config(DbConfig::SQLITE_DBCONFIG_ENABLE_FKEY).unwrap();
-        assert_eq!(
-            db.set_db_config(DbConfig::SQLITE_DBCONFIG_ENABLE_FKEY, opposite),
-            Ok(opposite)
-        );
-        assert_eq!(
-            db.db_config(DbConfig::SQLITE_DBCONFIG_ENABLE_FKEY),
-            Ok(opposite)
-        );
-
-        let opposite = !db
-            .db_config(DbConfig::SQLITE_DBCONFIG_ENABLE_TRIGGER)
-            .unwrap();
-        assert_eq!(
-            db.set_db_config(DbConfig::SQLITE_DBCONFIG_ENABLE_TRIGGER, opposite),
-            Ok(opposite)
-        );
-        assert_eq!(
-            db.db_config(DbConfig::SQLITE_DBCONFIG_ENABLE_TRIGGER),
-            Ok(opposite)
-        );
     }
 }

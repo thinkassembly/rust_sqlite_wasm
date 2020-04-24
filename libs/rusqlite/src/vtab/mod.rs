@@ -345,7 +345,6 @@ impl IndexInfo {
     }
 
     /// Estimated number of rows returned.
-    #[cfg(feature = "modern_sqlite")] // SQLite >= 3.8.2
     pub fn set_estimated_rows(&mut self, estimated_rows: i64) {
         unsafe {
             (*self.0).estimatedRows = estimated_rows;
@@ -1032,31 +1031,3 @@ pub mod array;
 pub mod csvtab;
 #[cfg(feature = "series")]
 pub mod series; // SQLite >= 3.9.0
-
-#[cfg(test)]
-mod test {
-    #[test]
-    fn test_dequote() {
-        assert_eq!("", super::dequote(""));
-        assert_eq!("'", super::dequote("'"));
-        assert_eq!("\"", super::dequote("\""));
-        assert_eq!("'\"", super::dequote("'\""));
-        assert_eq!("", super::dequote("''"));
-        assert_eq!("", super::dequote("\"\""));
-        assert_eq!("x", super::dequote("'x'"));
-        assert_eq!("x", super::dequote("\"x\""));
-        assert_eq!("x", super::dequote("x"));
-    }
-    #[test]
-    fn test_parse_boolean() {
-        assert_eq!(None, super::parse_boolean(""));
-        assert_eq!(Some(true), super::parse_boolean("1"));
-        assert_eq!(Some(true), super::parse_boolean("yes"));
-        assert_eq!(Some(true), super::parse_boolean("on"));
-        assert_eq!(Some(true), super::parse_boolean("true"));
-        assert_eq!(Some(false), super::parse_boolean("0"));
-        assert_eq!(Some(false), super::parse_boolean("no"));
-        assert_eq!(Some(false), super::parse_boolean("off"));
-        assert_eq!(Some(false), super::parse_boolean("false"));
-    }
-}
